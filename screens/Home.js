@@ -25,11 +25,13 @@ export default function Home({navigation}){
 
   // Renderizado de cada elemento de la nota
   const renderNote = ({ item }) => (
-    <View style={homeStyle.noteCard}>
-      <Text style={homeStyle.noteTitle}>{item.titulo}</Text>
-      <Text style={homeStyle.noteDate}>{item.fecha}</Text>
-      <Text style={homeStyle.noteShortDesc}>{item.descorta}</Text>
-    </View>
+    <TouchableOpacity style={homeStyle.noteCard}>
+        <View>
+          <Text style={homeStyle.noteTitle}>{item.titulo}</Text>
+          <Text style={homeStyle.noteDate}>{item.fecha}</Text>
+          <Text style={homeStyle.noteShortDesc}>{item.descorta}</Text>
+        </View>
+    </TouchableOpacity>
   )
 
     return (
