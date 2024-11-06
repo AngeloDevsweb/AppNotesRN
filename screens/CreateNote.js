@@ -1,6 +1,7 @@
 import { Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native'
 import { createNoteStyle } from '../styles/CreateNoteStyle'
 import { useState } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function CreateNote(){
 
