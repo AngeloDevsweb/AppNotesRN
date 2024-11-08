@@ -71,5 +71,7 @@ export const createNoteStyle = StyleSheet.create({
     fontSize: 16,
     fontWeight: '300',
     marginTop:15
-  }
+  },
+  
+  
 });

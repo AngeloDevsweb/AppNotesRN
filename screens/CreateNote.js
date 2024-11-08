@@ -1,50 +1,65 @@
-import { Text, View, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native'
-import { createNoteStyle } from '../styles/CreateNoteStyle'
-import { useState } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Text, View, ScrollView, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
+import { createNoteStyle } from '../styles/CreateNoteStyle';
+import { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-export default function CreateNote({navigation}){
+export default function CreateNote({ navigation }) {
+  const [titulo, setTitulo] = useState('');
+  const [descorta, setDescorta] = useState('');
+  const [fecha, setFecha] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
-  const [titulo, setTitulo] = useState('')
-  const [descorta, setDescorta] = useState('')
-  const [fecha, setFecha] = useState('')
-  const [descripcion, setDescripcion] = useState('')
-
-  // Función para guardar una nueva nota en AsyncStorage
   const saveNote = async () => {
+
+    if(!titulo || !descorta || !fecha || !descripcion){
+      Alert.alert('Error', 'Debe llenar todos los campos')
+      return;
+    }
+
     try {
       const newNote = {
-        id: Date.now().toString(), // Genera un ID único para cada nota
+        id: Date.now().toString(),
         titulo,
         descorta,
         fecha,
         descripcion,
-      }
+      };
 
-      // Recuperar notas guardadas anteriormente
-      const storedNotes = await AsyncStorage.getItem('notas')
-      const notes = storedNotes ? JSON.parse(storedNotes) : []
+      const storedNotes = await AsyncStorage.getItem('notas');
+      const notes = storedNotes ? JSON.parse(storedNotes) : [];
+      notes.push(newNote);
+      await AsyncStorage.setItem('notas', JSON.stringify(notes));
 
-      // Agregar la nueva nota al arreglo de notas y guardarlo en AsyncStorage
-      notes.push(newNote)
-      await AsyncStorage.setItem('notas', JSON.stringify(notes))
+      setTitulo('');
+      setDescorta('');
+      setFecha('');
+      setDescripcion('');
 
-      // Limpiar los campos después de guardar
-      setTitulo('')
-      setDescorta('')
-      setFecha('')
-      setDescripcion('')
-
-      Alert.alert('Nota guardada', 'Tu nota se ha guardado exitosamente.')
-      navigation.navigate('Home')
+      Alert.alert('Nota guardada', 'Tu nota se ha guardado exitosamente.');
+      navigation.navigate('Home');
     } catch (error) {
-      console.error('Error al guardar la nota:', error)
-      Alert.alert('Error', 'No se pudo guardar la nota.')
+      console.error('Error al guardar la nota:', error);
+      Alert.alert('Error', 'No se pudo guardar la nota.');
     }
-  }
+  };
 
-    return (
-      <ScrollView contentContainerStyle={createNoteStyle.scrollContainer}>
+  const showDatePickerHandler = () => {
+    setShowDatePicker(true);
+  };
+
+  const onDateChange = (event, date) => {
+    setShowDatePicker(Platform.OS === 'ios'); // Para iOS mantiene abierto hasta confirmar
+    if (event.type !== 'dismissed' && date) {
+      setSelectedDate(date);
+      setFecha(date.toLocaleDateString('es-ES')); // Ajuste en formato
+    }
+  };
+
+  return (
+    <ScrollView contentContainerStyle={createNoteStyle.scrollContainer}>
       <View style={createNoteStyle.main}>
         <Text style={createNoteStyle.title}>CREAR NOTA</Text>
 
@@ -63,13 +78,29 @@ export default function CreateNote({navigation}){
             value={descorta}
             onChangeText={setDescorta}
           />
-          <TextInput
-            style={createNoteStyle.input}
-            placeholder="Fecha"
-            placeholderTextColor="slategray"
-            value={fecha}
-            onChangeText={setFecha}
-          />
+
+          {/* Campo de Fecha */}
+          <TouchableOpacity style={createNoteStyle.input} onPress={showDatePickerHandler}>
+            <TextInput
+              style={{marginTop:10}}
+              placeholder="Fecha"
+              placeholderTextColor="slategray"
+              value={fecha}
+              editable={false} // Hace que el campo de fecha sea de solo lectura
+            />
+          </TouchableOpacity>
+
+          {/* Selector de Fecha */}
+          {showDatePicker && (
+            <DateTimePicker
+              value={selectedDate}
+              mode="date"
+              display="default"
+              onChange={onDateChange}
+              minimumDate={new Date()}
+            />
+          )}
+
           <TextInput
             style={createNoteStyle.input}
             placeholder="Descripcion"
@@ -84,5 +115,5 @@ export default function CreateNote({navigation}){
         </View>
       </View>
     </ScrollView>
-    )
+  );
 }

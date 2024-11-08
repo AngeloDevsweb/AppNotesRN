@@ -3,6 +3,7 @@ import {homeStyle} from '../styles/HomeStyle'
 import {useState, useEffect} from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
+
 export default function Home({navigation}){
   const [notes, setNotes] = useState([])
 
