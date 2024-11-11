@@ -26,7 +26,8 @@ export default function Home({navigation}){
 
   // Renderizado de cada elemento de la nota
   const renderNote = ({ item }) => (
-    <TouchableOpacity style={homeStyle.noteCard}>
+    <TouchableOpacity style={homeStyle.noteCard} 
+    onPress={()=>navigation.navigate('DetailNote', {note:item})}>
         <View>
           <Text style={homeStyle.noteTitle}>{item.titulo}</Text>
           <Text style={homeStyle.noteDate}>{item.fecha}</Text>
